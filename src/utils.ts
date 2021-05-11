@@ -48,7 +48,7 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
   const getIssue = async (id: string): Promise<JIRA.Issue> => {
     try {
       const response = await client.get<JIRA.Issue>(
-        `/issue/${id}?fields=project,summary,issuetype,labels,status,customfield_10016`
+        `/issue/${id}?fields=project,summary,issuetype,labels,status,customfield_10014`
       );
       return response.data;
     } catch (e) {
@@ -64,7 +64,7 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
           issuetype: type,
           project,
           summary,
-          customfield_10016: estimate,
+          customfield_10014: estimate,
           labels: rawLabels,
           status: issueStatus,
         },

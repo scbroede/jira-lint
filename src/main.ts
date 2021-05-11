@@ -8,7 +8,6 @@ import {
   getHugePrComment,
   getJIRAClient,
   getJIRAIssueKeys,
-  getNoIdComment,
   getPRDescription,
   getPRTitleComment,
   isHumongousPR,
@@ -121,7 +120,7 @@ async function run(): Promise<void> {
     }
 
     const issueKeys = getJIRAIssueKeys(headBranch);
-    if (!issueKeys.length) {
+    /*if (!issueKeys.length) {
       const comment: IssuesCreateCommentParams = {
         ...commonPayload,
         body: getNoIdComment(headBranch),
@@ -130,14 +129,14 @@ async function run(): Promise<void> {
 
       core.setFailed('JIRA issue id is missing in your branch.');
       process.exit(1);
-    }
+    }*/
 
     // use the last match (end of the branch name)
     const issueKey = issueKeys[issueKeys.length - 1];
     console.log(`JIRA key -> ${issueKey}`);
 
     const { getTicketDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
-    const details: JIRADetails = await getTicketDetails(issueKey);
+    const details: JIRADetails = issueKey ? await getTicketDetails(issueKey) : ({} as JIRADetails);
     if (details.key) {
       if (!isIssueStatusValid(VALIDATE_ISSUE_STATUS, ALLOWED_ISSUE_STATUSES.split(','), details)) {
         const invalidIssueStatusComment: IssuesCreateCommentParams = {
@@ -182,14 +181,14 @@ async function run(): Promise<void> {
         }
       }
     } else {
-      const comment: IssuesCreateCommentParams = {
+      /*const comment: IssuesCreateCommentParams = {
         ...commonPayload,
         body: getNoIdComment(headBranch),
       };
       await addComment(client, comment);
 
       core.setFailed('Invalid JIRA key. Please create a branch with a valid JIRA issue key.');
-      process.exit(1);
+      process.exit(1);*/
     }
   } catch (error) {
     console.log({ error });

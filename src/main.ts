@@ -16,6 +16,7 @@ import {
   updatePrDetails,
   isIssueStatusValid,
   getInvalidIssueStatusComment,
+  addAssignees,
 } from './utils';
 import { PullRequestParams, JIRADetails, JIRALintActionInputs } from './types';
 import { DEFAULT_PR_ADDITIONS_THRESHOLD } from './constants';
@@ -79,6 +80,7 @@ async function run(): Promise<void> {
       body: prBody = '',
       additions = 0,
       title = '',
+      requested_reviewers: reviewers,
     } = pullRequest as PullRequestParams;
 
     // common fields for both issue and comment
@@ -112,6 +114,20 @@ async function run(): Promise<void> {
       await addLabels(client, {
         ...commonPayload,
         labels,
+      });
+    }
+
+    const newAssignees: string[] = [];
+    if (reviewers && reviewers.length) {
+      newAssignees.push(...reviewers.map((reviewer) => reviewer.login));
+    }
+    if (['testing', 'uat', 'staging', 'production'].includes(baseBranch)) {
+      newAssignees.push('vipanhira');
+    }
+    if (newAssignees.length) {
+      addAssignees(client, {
+        ...commonPayload,
+        assignees: newAssignees,
       });
     }
 

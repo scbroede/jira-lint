@@ -2,7 +2,12 @@ import axios from 'axios';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import similarity from 'string-similarity';
-import { IssuesAddLabelsParams, PullsUpdateParams, IssuesCreateCommentParams } from '@octokit/rest';
+import {
+  IssuesAddLabelsParams,
+  PullsUpdateParams,
+  IssuesCreateCommentParams,
+  IssuesAddAssigneesParams,
+} from '@octokit/rest';
 import {
   MARKER_REGEX,
   BOT_BRANCH_PATTERNS,
@@ -110,6 +115,16 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
 export const addLabels = async (client: github.GitHub, labelData: IssuesAddLabelsParams): Promise<void> => {
   try {
     await client.issues.addLabels(labelData);
+  } catch (error) {
+    core.setFailed(error.message);
+    process.exit(1);
+  }
+};
+
+/** Add the specified label to the PR. */
+export const addAssignees = async (client: github.GitHub, labelData: IssuesAddAssigneesParams): Promise<void> => {
+  try {
+    await client.issues.addAssignees(labelData);
   } catch (error) {
     core.setFailed(error.message);
     process.exit(1);

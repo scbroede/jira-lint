@@ -13,6 +13,12 @@ export interface PullRequestParams {
   changed_files?: number;
   additions?: number;
   title?: string;
+  assignees: {
+    login: string;
+  }[];
+  requested_reviewers: {
+    login: string;
+  }[];
   [key: string]: unknown;
 }
 

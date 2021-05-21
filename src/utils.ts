@@ -12,7 +12,7 @@ import {
   MARKER_REGEX,
   BOT_BRANCH_PATTERNS,
   DEFAULT_BRANCH_PATTERNS,
-  JIRA_REGEX_MATCHER,
+  //JIRA_REGEX_MATCHER,
   HIDDEN_MARKER,
 } from './constants';
 import { JIRA, JIRADetails, JIRAClient } from './types';
@@ -25,10 +25,8 @@ export const reverseString = (input: string): string => input.split('').reverse(
 
 /** Extract JIRA issue keys from a string. */
 export const getJIRAIssueKeys = (input: string): string[] => {
-  const matches = reverseString(input).toUpperCase().match(JIRA_REGEX_MATCHER);
-  if (matches?.length) {
-    return matches.map(reverseString).reverse();
-  } else return [];
+  const matches = input.toUpperCase().match(/[A-Z0-9]+-[0-9]+/);
+  return matches || [];
 };
 
 export const LABELS = {

@@ -81,7 +81,12 @@ async function run(): Promise<void> {
       additions = 0,
       title = '',
       requested_reviewers: reviewers,
-    } = pullRequest as PullRequestParams;
+    } = Object.assign(
+      {},
+      ...Object.entries(pullRequest!)
+        .filter(([k, v]) => v != null)
+        .map(([k, v]) => ({ [k]: v }))
+    ) as PullRequestParams;
 
     // common fields for both issue and comment
     const commonPayload = {

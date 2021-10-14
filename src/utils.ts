@@ -59,6 +59,22 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
     }
   };
 
+  const transitionIssue = async (id: string, transitionId: string) => {
+    try {
+      await client.post<void>(
+        `/issue/${id}/transitions`,
+        {
+          transition: {
+            id: transitionId
+          }
+        }
+      );
+      return;
+    } catch (e) {
+      throw e;
+    }
+  }
+
   const getTicketDetails = async (key: string): Promise<JIRADetails> => {
     try {
       const issue: JIRA.Issue = await getIssue(key);
@@ -85,6 +101,7 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
         summary,
         url: `${baseURL}/browse/${key}`,
         status: issueStatus.name,
+        statusId: issueStatus.id,
         type: {
           name: type.name,
           icon: type.iconUrl,
@@ -105,6 +122,7 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
   return {
     client,
     getTicketDetails,
+    transitionIssue,
     getIssue,
   };
 };

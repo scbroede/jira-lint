@@ -14,8 +14,8 @@ import {
   shouldSkipBranchLint,
   shouldUpdatePRDescription,
   updatePrDetails,
-  isIssueStatusValid,
-  getInvalidIssueStatusComment,
+  // isIssueStatusValid,
+  // getInvalidIssueStatusComment,
   addAssignees,
 } from './utils';
 import { PullRequestParams, JIRADetails, JIRALintActionInputs } from './types';
@@ -52,8 +52,8 @@ async function run(): Promise<void> {
       BRANCH_IGNORE_PATTERN,
       SKIP_COMMENTS,
       PR_THRESHOLD,
-      VALIDATE_ISSUE_STATUS,
-      ALLOWED_ISSUE_STATUSES,
+      // VALIDATE_ISSUE_STATUS,
+      // ALLOWED_ISSUE_STATUSES,
     } = getInputs();
 
     const defaultAdditionsCount = 800;
@@ -156,19 +156,24 @@ async function run(): Promise<void> {
     const issueKey = issueKeys[issueKeys.length - 1];
     console.log(`JIRA key -> ${issueKey}`);
 
-    const { getTicketDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
+    const { getTicketDetails, transitionIssue } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
     const details: JIRADetails = issueKey ? await getTicketDetails(issueKey) : ({} as JIRADetails);
     if (details.key) {
-      if (!isIssueStatusValid(VALIDATE_ISSUE_STATUS, ALLOWED_ISSUE_STATUSES.split(','), details)) {
-        const invalidIssueStatusComment: IssuesCreateCommentParams = {
-          ...commonPayload,
-          body: getInvalidIssueStatusComment(details.status, ALLOWED_ISSUE_STATUSES),
-        };
-        console.log('Adding comment for invalid issue status');
-        await addComment(client, invalidIssueStatusComment);
+      // if (!isIssueStatusValid(VALIDATE_ISSUE_STATUS, ALLOWED_ISSUE_STATUSES.split(','), details)) {
+      //   const invalidIssueStatusComment: IssuesCreateCommentParams = {
+      //     ...commonPayload,
+      //     body: getInvalidIssueStatusComment(details.status, ALLOWED_ISSUE_STATUSES),
+      //   };
+      //   console.log('Adding comment for invalid issue status');
+      //   await addComment(client, invalidIssueStatusComment);
 
-        core.setFailed('The found jira issue does is not in acceptable statuses');
-        process.exit(1);
+      //   core.setFailed('The found jira issue does is not in acceptable statuses');
+      //   process.exit(1);
+      // }
+
+      // if issue is in progress, move it to code review
+      if (details.statusId === "10600") {
+        transitionIssue(issueKey, "41");
       }
 
       if (shouldUpdatePRDescription(prBody)) {

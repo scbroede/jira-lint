@@ -30,6 +30,7 @@ const getInputs = (): JIRALintActionInputs => {
   const PR_THRESHOLD = parseInt(core.getInput('pr-threshold', { required: false }), 10);
   const VALIDATE_ISSUE_STATUS: boolean = core.getInput('validate_issue_status', { required: false }) === 'true';
   const ALLOWED_ISSUE_STATUSES: string = core.getInput('allowed_issue_statuses');
+  const IS_MERGE: boolean = core.getInput('is-merge', { required: false }) === 'true';
 
   return {
     JIRA_TOKEN,
@@ -40,6 +41,7 @@ const getInputs = (): JIRALintActionInputs => {
     JIRA_BASE_URL: JIRA_BASE_URL.endsWith('/') ? JIRA_BASE_URL.replace(/\/$/, '') : JIRA_BASE_URL,
     VALIDATE_ISSUE_STATUS,
     ALLOWED_ISSUE_STATUSES,
+    IS_MERGE
   };
 };
 
@@ -52,6 +54,7 @@ async function run(): Promise<void> {
       BRANCH_IGNORE_PATTERN,
       SKIP_COMMENTS,
       PR_THRESHOLD,
+      IS_MERGE
       // VALIDATE_ISSUE_STATUS,
       // ALLOWED_ISSUE_STATUSES,
     } = getInputs();
@@ -115,7 +118,7 @@ async function run(): Promise<void> {
     console.log('Head branch -> ', headBranch);
 
     const labels = ['develop', 'testing', 'uat', 'staging', 'production'].filter((branch) => branch === baseBranch);
-    if (labels.length) {
+    if (labels.length && !IS_MERGE) {
       await addLabels(client, {
         ...commonPayload,
         labels,
@@ -129,7 +132,7 @@ async function run(): Promise<void> {
     if (['testing', 'uat', 'staging', 'production'].includes(baseBranch)) {
       newAssignees.push('vipanhira');
     }
-    if (newAssignees.length) {
+    if (newAssignees.length && !IS_MERGE) {
       addAssignees(client, {
         ...commonPayload,
         assignees: newAssignees,
@@ -174,9 +177,12 @@ async function run(): Promise<void> {
       // if issue is in progress, move it to code review
       if (details.statusId === "10600") {
         transitionIssue(issueKey, "41");
+      } else if (details.statusId === "11712" && IS_MERGE) {
+        // if issue is in code review and pr was merged, move it to qa
+        transitionIssue(issueKey, "61")
       }
 
-      if (shouldUpdatePRDescription(prBody)) {
+      if (shouldUpdatePRDescription(prBody) && !IS_MERGE) {
         const prData: PullsUpdateParams = {
           owner,
           repo,

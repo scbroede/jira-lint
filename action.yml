@@ -33,6 +33,10 @@ inputs:
       Requires validate_issue_status to be set to true.
     required: false
     default: "In Progress"
+  is-merge:
+    description: 'Whether the pr was just merged or just created'
+    required: false
+    default: false
 
 runs:
   using: 'node12'

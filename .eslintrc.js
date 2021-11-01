@@ -20,7 +20,7 @@ module.exports = {
     'camelcase': 'off',
     '@typescript-eslint/camelcase': 'error',
     '@typescript-eslint/class-name-casing': 'error',
-    '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
+    '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/func-call-spacing': ['error', 'never'],
     '@typescript-eslint/generic-type-naming': ['error', '^[A-Z][A-Za-z]*$'],
     '@typescript-eslint/no-array-constructor': 'error',

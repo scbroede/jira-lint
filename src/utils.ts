@@ -51,7 +51,7 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
   const getIssue = async (id: string): Promise<JIRA.Issue> => {
     try {
       const response = await client.get<JIRA.Issue>(
-        `/issue/${id}?fields=project,summary,issuetype,labels,status,customfield_10014`
+        `/issue/${id}?fields=project,summary,issuetype,labels,status,customfield_10014,customfield_10022`
       );
       return response.data;
     } catch (e) {
@@ -61,19 +61,16 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
 
   const transitionIssue = async (id: string, transitionId: string) => {
     try {
-      await client.post<void>(
-        `/issue/${id}/transitions`,
-        {
-          transition: {
-            id: transitionId
-          }
-        }
-      );
+      await client.post<void>(`/issue/${id}/transitions`, {
+        transition: {
+          id: transitionId,
+        },
+      });
       return;
     } catch (e) {
       throw e;
     }
-  }
+  };
 
   const getTicketDetails = async (key: string): Promise<JIRADetails> => {
     try {
@@ -83,7 +80,8 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
           issuetype: type,
           project,
           summary,
-          customfield_10014: estimate,
+          //customfield_10014: estimate,
+          customfield_10022: estimate,
           labels: rawLabels,
           status: issueStatus,
         },

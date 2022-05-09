@@ -101,6 +101,7 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
         status: issueStatus.name,
         statusId: issueStatus.id,
         type: {
+          id: type.id,
           name: type.name,
           icon: type.iconUrl,
         },

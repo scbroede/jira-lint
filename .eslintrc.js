@@ -51,6 +51,7 @@ module.exports = {
     'jsdoc/require-param': 'off',
     'jsdoc/require-returns': 'off',
     'jsdoc/check-examples': 'off',
+    'jsdoc/require-description-complete-sentence': 'off',
   },
   env: {
     'node': true,

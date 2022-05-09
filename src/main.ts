@@ -41,7 +41,7 @@ const getInputs = (): JIRALintActionInputs => {
     JIRA_BASE_URL: JIRA_BASE_URL.endsWith('/') ? JIRA_BASE_URL.replace(/\/$/, '') : JIRA_BASE_URL,
     VALIDATE_ISSUE_STATUS,
     ALLOWED_ISSUE_STATUSES,
-    IS_MERGE
+    IS_MERGE,
   };
 };
 
@@ -54,7 +54,7 @@ async function run(): Promise<void> {
       BRANCH_IGNORE_PATTERN,
       SKIP_COMMENTS,
       PR_THRESHOLD,
-      IS_MERGE
+      IS_MERGE,
       // VALIDATE_ISSUE_STATUS,
       // ALLOWED_ISSUE_STATUSES,
     } = getInputs();
@@ -175,11 +175,11 @@ async function run(): Promise<void> {
       // }
 
       // if issue is in progress, move it to code review
-      if (details.statusId === "10600") {
-        transitionIssue(issueKey, "41");
-      } else if (details.statusId === "11712" && IS_MERGE) {
+      if (details.statusId === '10600') {
+        transitionIssue(issueKey, details.type.id === '10500' ? '281' : '41');
+      } else if (details.statusId === '11712' && IS_MERGE) {
         // if issue is in code review and pr was merged, move it to qa
-        transitionIssue(issueKey, "61")
+        transitionIssue(issueKey, details.type.id === '10500' ? '381' : '61');
       }
 
       if (shouldUpdatePRDescription(prBody) && !IS_MERGE) {

@@ -107,6 +107,7 @@ export interface JIRADetails {
   status: string;
   statusId: string;
   type: {
+    id: string;
     name: string;
     icon: string;
   };
@@ -136,7 +137,7 @@ export interface JIRAClient {
   /** Get complete JIRA Issue details. */
   getIssue: (key: string) => Promise<JIRA.Issue>;
   /** transition issue */
-  transitionIssue: (key: string, transitonId: string) => Promise<void>
+  transitionIssue: (key: string, transitonId: string) => Promise<void>;
   /** Get required details to display in PR. */
   getTicketDetails: (key: string) => Promise<JIRADetails>;
 }

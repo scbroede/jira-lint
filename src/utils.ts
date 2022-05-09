@@ -289,7 +289,6 @@ export const getPRDescription = (body = '', details: JIRADetails): string => {
     <tr>
       <th>Type</th>
       <td>
-        <img alt="${details.type.name}" src="${details.type.icon}" />
         ${details.type.name}
       </td>
     </tr>

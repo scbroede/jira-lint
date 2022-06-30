@@ -129,9 +129,6 @@ async function run(): Promise<void> {
     if (reviewers && reviewers.length) {
       newAssignees.push(...reviewers.map((reviewer) => reviewer.login));
     }
-    if (['testing', 'uat', 'staging', 'production'].includes(baseBranch)) {
-      newAssignees.push('vipanhira');
-    }
     if (newAssignees.length && !IS_MERGE) {
       addAssignees(client, {
         ...commonPayload,

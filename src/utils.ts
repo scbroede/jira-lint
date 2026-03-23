@@ -227,26 +227,42 @@ export const getPRTitleComment = (storyTitle: string, prTitle: string): string =
  * @example shouldSkipBranchLint('dependabot') -> true
  * @example shouldSkipBranchLint('feature/update_123456789') -> false
  */
-export const shouldSkipBranchLint = (branch: string, additionalIgnorePattern?: string): boolean => {
-  if (BOT_BRANCH_PATTERNS.some((pattern) => pattern.test(branch))) {
+export const shouldSkipBranchLint = (
+  headBranch: string,
+  baseBranch: string,
+  additionalIgnorePattern?: string,
+  additionalAllowPattern?: string
+): boolean => {
+  if (BOT_BRANCH_PATTERNS.some((pattern) => pattern.test(headBranch))) {
     console.log(`You look like a bot 🤖 so we're letting you off the hook!`);
     return true;
   }
 
-  if (DEFAULT_BRANCH_PATTERNS.some((pattern) => pattern.test(branch))) {
-    console.log(`Ignoring check for default branch ${branch}`);
+  if (DEFAULT_BRANCH_PATTERNS.some((pattern) => pattern.test(headBranch))) {
+    console.log(`Ignoring check for default branch ${headBranch}`);
     return true;
   }
 
   const ignorePattern = new RegExp(additionalIgnorePattern || '');
-  if (!!additionalIgnorePattern && ignorePattern.test(branch)) {
+  if (!!additionalIgnorePattern && ignorePattern.test(headBranch)) {
     console.log(
-      `branch '${branch}' ignored as it matches the ignore pattern '${additionalIgnorePattern}' provided in skip-branches`
+      `branch '${headBranch}' ignored as it matches the ignore pattern '${additionalIgnorePattern}' provided in skip-branches`
     );
     return true;
   }
 
-  console.log(`branch '${branch}' does not match ignore pattern provided in 'skip-branches' option:`, ignorePattern);
+  const allowPattern = new RegExp(additionalAllowPattern || '');
+  if (!!additionalAllowPattern && !allowPattern.test(baseBranch)) {
+    console.log(
+      `branch '${baseBranch}' ignored as it does not match the allow pattern '${additionalAllowPattern}' provided in restrict-to-branches`
+    );
+    return true;
+  }
+
+  console.log(
+    `branch '${headBranch}' does not match ignore pattern provided in 'skip-branches' option:`,
+    ignorePattern
+  );
   return false;
 };
 

@@ -26,6 +26,7 @@ const getInputs = (): JIRALintActionInputs => {
   const JIRA_BASE_URL: string = core.getInput('jira-base-url', { required: true });
   const GITHUB_TOKEN: string = core.getInput('github-token', { required: true });
   const BRANCH_IGNORE_PATTERN: string = core.getInput('skip-branches', { required: false }) || '';
+  const BRANCH_ALLOW_PATTERN: string = core.getInput('restrict-to-branches', { required: false }) || '';
   const SKIP_COMMENTS: boolean = core.getInput('skip-comments', { required: false }) === 'true';
   const PR_THRESHOLD = parseInt(core.getInput('pr-threshold', { required: false }), 10);
   const VALIDATE_ISSUE_STATUS: boolean = core.getInput('validate_issue_status', { required: false }) === 'true';
@@ -36,6 +37,7 @@ const getInputs = (): JIRALintActionInputs => {
     JIRA_TOKEN,
     GITHUB_TOKEN,
     BRANCH_IGNORE_PATTERN,
+    BRANCH_ALLOW_PATTERN,
     SKIP_COMMENTS,
     PR_THRESHOLD: isNaN(PR_THRESHOLD) ? DEFAULT_PR_ADDITIONS_THRESHOLD : PR_THRESHOLD,
     JIRA_BASE_URL: JIRA_BASE_URL.endsWith('/') ? JIRA_BASE_URL.replace(/\/$/, '') : JIRA_BASE_URL,
@@ -52,6 +54,7 @@ async function run(): Promise<void> {
       JIRA_BASE_URL,
       GITHUB_TOKEN,
       BRANCH_IGNORE_PATTERN,
+      BRANCH_ALLOW_PATTERN,
       SKIP_COMMENTS,
       PR_THRESHOLD,
       IS_MERGE,
@@ -136,7 +139,7 @@ async function run(): Promise<void> {
       });
     }
 
-    if (shouldSkipBranchLint(headBranch, BRANCH_IGNORE_PATTERN)) {
+    if (shouldSkipBranchLint(headBranch, baseBranch, BRANCH_IGNORE_PATTERN, BRANCH_ALLOW_PATTERN)) {
       process.exit(0);
     }
 

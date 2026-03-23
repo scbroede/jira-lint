@@ -125,6 +125,7 @@ export interface JIRALintActionInputs {
   JIRA_BASE_URL: string;
   GITHUB_TOKEN: string;
   BRANCH_IGNORE_PATTERN: string;
+  BRANCH_ALLOW_PATTERN: string;
   SKIP_COMMENTS: boolean;
   PR_THRESHOLD: number;
   VALIDATE_ISSUE_STATUS: boolean;
